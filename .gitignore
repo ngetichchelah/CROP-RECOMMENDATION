@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Exclude Steps 3-6 (not ready yet)
+src/
+models/
+sql_queries/
+powerbi/
+app/
+data/database/
+notebooks/sql_analytics.ipynb
+requirements-streamlit.txt
+
+# Exclude extra data files
+FAOSTAT_data_en_10-13-2025.csv
+
+# Logs
+*.log
