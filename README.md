@@ -50,29 +50,12 @@ Cash Crops: cotton, jute, coffee
 ### Machine Learning Approaches
 
 #### 1. **Random Forest Classifier** (Primary Model)
-- Ensemble method with 100+ decision trees
-- Bootstrap aggregation with feature randomness
-- Robust to overfitting, handles non-linear relationships
 
 #### 2. **XGBoost Classifier** (Secondary Model)
-- Gradient boosting with sequential tree building
-- Built-in regularization and cross-validation
-- High performance on structured data
 
 #### 3. **Support Vector Machine** (Baseline)
-- RBF kernel for non-linear classification
-- Effective in high-dimensional spaces
-- Strong theoretical foundations
 
 #### 4. **K-Nearest Neighbors** (Baseline)
-- Instance-based learning approach
-- Simple implementation, intuitive predictions
-- No training phase required
-
-#### 5. **Ensemble Approach** (Advanced Strategy)
-- Weighted voting from multiple models
-- Reduced prediction variance
-- Improved generalization
 
 ### Tech Stack
 
