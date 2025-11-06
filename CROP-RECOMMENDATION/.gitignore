@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files - Don't push to GitHub
+data/raw/*.csv
+models/*.pkl
+*.pkl
+
+# Power BI (optional - large files)
+powerbi/*.pbix
+
+# Temporary/cache
+*.log
+*.tmp
+*.bak

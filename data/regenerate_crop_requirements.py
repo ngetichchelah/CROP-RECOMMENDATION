@@ -40,14 +40,14 @@ crop_summary.columns = [
 # Save to CSV
 crop_summary.to_csv('data/processed/crop_requirements_summary.csv', index=False)
 
-print("\n✅ File regenerated successfully!")
-print(f"✅ Shape: {crop_summary.shape}")
-print(f"✅ Columns ({len(crop_summary.columns)}):")
+print("\nFile regenerated successfully!")
+print(f"Shape: {crop_summary.shape}")
+print(f"Columns ({len(crop_summary.columns)}):")
 for i, col in enumerate(crop_summary.columns, 1):
     print(f"   {i:2d}. {col}")
 
-print(f"\n✅ Sample data (first 3 crops):")
+print(f"\n Sample data (first 3 crops):")
 print(crop_summary.head(3))
 
 print("\n✅ Saved to: data/processed/crop_requirements_summary.csv")
-print("=" * 60)
+print()

@@ -24,7 +24,7 @@ class CropRecommendationModel:
     """Class to handle crop recommendation model training and evaluation"""
     
     #def __init__(self, data_path='data/processed/crop_data_cleaned.csv'):
-    def __init__(self, data_path='data/processed/crop_data_selected_features'):
+    def __init__(self, data_path='data/processed/crop_data_with_features.csv'):
         """Initialize with data path"""
         self.data_path = data_path
         self.models = {}
@@ -48,6 +48,11 @@ class CropRecommendationModel:
         print(f"Number of classes: {y.nunique()}")
         print(f"Classes: {sorted(y.unique())}")
         
+        # Encode categorical features automatically
+        for col in X.columns:
+            if X[col].dtype == 'object':
+                X[col] = X[col].astype('category').cat.codes  # convert text to numbers
+    
         # Encode target labels
         self.label_encoder = LabelEncoder()
         y_encoded = self.label_encoder.fit_transform(y)
@@ -299,19 +304,28 @@ class CropRecommendationModel:
     
     def cross_validate(self, model_name='Random Forest', cv=5):
         """Perform cross-validation"""
-        print(f"\n{'='*60}")
+        print()
         print(f"CROSS-VALIDATION ({cv}-Fold) - {model_name}")
-        print("="*60)
+        print()
         
         # Load fresh data
         df = pd.read_csv(self.data_path)
         X = df.drop('label', axis=1)
         y = self.label_encoder.transform(df['label'])
+        
+        # Encode categorical features
+        for col in X.columns:
+            if X[col].dtype == 'object':
+                X[col] = X[col].astype('category').cat.codes
+                
+        # Encode target labels
+        y_encoded = LabelEncoder().fit_transform(y)        
         X_scaled = self.scaler.transform(X)
         
         # Perform CV
         model = self.models[model_name]
-        cv_scores = cross_val_score(model, X_scaled, y, cv=cv, scoring='accuracy')
+        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=5)
+        #cv_scores = cross_val_score(model, X_scaled, y, cv=cv, scoring='accuracy')
         
         print(f"Cross-validation scores: {cv_scores}")
         print(f"Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")

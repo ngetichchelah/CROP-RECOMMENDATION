@@ -1,0 +1,41 @@
+Agricultural domain knowledge tells us crops naturally fall into 5 functional groups
+
+Group 1: Nitrogen-Fixing Legumes 
+
+Crops: chickpea, lentil, kidneybeans, mothbeans, pigeonpeas, blackgram, mungbean
+Characteristic: LOW nitrogen needs (20-50 kg/ha)
+Why separate: They ADD nitrogen to soil (40-80 kg/ha through root nodules)
+Agricultural value: Plant these FIRST in rotation to enrich soil
+Real-world use: "Which crops improve my soil?"
+
+Group 2: Heavy Feeders (Cash Crops) 
+
+Crops: cotton, jute, coffee
+Characteristic: VERY HIGH nitrogen needs (>80 kg/ha)
+Why separate: They DEPLETE soil nitrogen rapidly
+Agricultural value: Plant AFTER legumes to utilize added nitrogen
+Real-world use: "Which crops need the most fertilizer?"
+
+Group 3: Water-Intensive Tropicals 
+
+Crops: rice, banana, papaya, coconut
+Characteristic: HIGH rainfall needs (>200mm)
+Why separate: Require irrigation in dry regions OR monsoon climate
+Agricultural value: Don't recommend these in drought-prone areas
+Real-world use: "Which crops survive with little water?"
+
+Group 4: Drought-Tolerant Crops 
+
+Crops: groundnuts, mothbeans (overlap with legumes)
+Characteristic: LOW rainfall tolerance (<80mm)
+Why separate: Can survive arid conditions
+Agricultural value: Recommend for Makueni-type bare lands
+Real-world use: "What can I grow in dry conditions?"
+
+Group 5: Balanced/Versatile Crops 
+
+Crops: maize, fruits (apple, grapes, mango, orange, pomegranate, watermelon, muskmelon)
+Characteristic: MODERATE requirements across all parameters
+Why separate: Suitable for average soils, no extreme needs
+Agricultural value: Safe recommendations for most farmers
+Real-world use: "What grows in normal conditions?"
