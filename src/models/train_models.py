@@ -24,7 +24,8 @@ class CropRecommendationModel:
     """Class to handle crop recommendation model training and evaluation"""
     
     #def __init__(self, data_path='data/processed/crop_data_cleaned.csv'):
-    def __init__(self, data_path='data/processed/crop_data_with_features.csv'):
+    def __init__(self, data_path='data/raw/Crop_recommendation.csv'):
+    # def __init__(self, data_path='data/processed/crop_data_with_features.csv'):
         """Initialize with data path"""
         self.data_path = data_path
         self.models = {}
@@ -40,9 +41,32 @@ class CropRecommendationModel:
         df = pd.read_csv(self.data_path)
         print(f"Dataset shape: {df.shape}")
         
+        # DEBUG: Print all columns to see what we have
+        print(f"ACTUAL COLUMNS: {list(df.columns)}")
+        print(f"First row: {df.iloc[0].to_dict()}")
+        
+        # Try to find the target column 
+        target_column = None
+        possible_targets = ['label', 'Label', 'LABEL', 'crop', 'Crop', 'target', 'class', 'recommendation']
+        
+        for col in possible_targets:
+            if col in df.columns:
+                target_column = col
+                print(f"Found target column: '{target_column}'")
+                break
+        
+        if target_column is None:
+            # If no common name found, assume last column is target
+            target_column = df.columns[-1]
+            print(f"No common target column found. Using last column: '{target_column}'")
+        
         # Separate features and target
-        X = df.drop('label', axis=1)
-        y = df['label']
+        X = df.drop(target_column, axis=1)
+        y = df[target_column]
+        
+        # # Separate features and target
+        # X = df.drop('label', axis=1)
+        # y = df['label']
         
         print(f"Features: {list(X.columns)}")
         print(f"Number of classes: {y.nunique()}")
@@ -158,7 +182,7 @@ class CropRecommendationModel:
             'precision': precision,
             'recall': recall,
             'f1_score': f1,
-            'predictions': y_pred
+            'predictions': y_pred 
         }
         
         print(f"  Accuracy:  {accuracy:.4f}")
@@ -310,27 +334,64 @@ class CropRecommendationModel:
         
         # Load fresh data
         df = pd.read_csv(self.data_path)
-        X = df.drop('label', axis=1)
-        y = self.label_encoder.transform(df['label'])
         
-        # Encode categorical features
-        for col in X.columns:
-            if X[col].dtype == 'object':
-                X[col] = X[col].astype('category').cat.codes
-                
-        # Encode target labels
-        y_encoded = LabelEncoder().fit_transform(y)        
+        # Find target column (same logic as load_data)
+        target_column = None
+        possible_targets = ['label', 'Label', 'LABEL', 'crop', 'Crop', 'target', 'class', 'recommendation']
+        
+        for col in possible_targets:
+            if col in df.columns:
+                target_column = col
+                break
+        
+        if target_column is None:
+            target_column = df.columns[-1]
+        
+        X = df.drop(target_column, axis=1)
+        y = df[target_column]
+        
+        # Encode target
+        y_encoded = self.label_encoder.transform(y)
         X_scaled = self.scaler.transform(X)
         
         # Perform CV
         model = self.models[model_name]
-        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=5)
-        #cv_scores = cross_val_score(model, X_scaled, y, cv=cv, scoring='accuracy')
+        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=cv, scoring='accuracy')
         
         print(f"Cross-validation scores: {cv_scores}")
         print(f"Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
         
         return cv_scores
+    
+    # def cross_validate(self, model_name='Random Forest', cv=5):
+    #     """Perform cross-validation"""
+    #     print()
+    #     print(f"CROSS-VALIDATION ({cv}-Fold) - {model_name}")
+    #     print()
+        
+    #     # Load fresh data
+    #     df = pd.read_csv(self.data_path)
+    #     X = df.drop('label', axis=1)
+    #     y = self.label_encoder.transform(df['label'])
+        
+    #     # Encode categorical features
+    #     for col in X.columns:
+    #         if X[col].dtype == 'object':
+    #             X[col] = X[col].astype('category').cat.codes
+                
+    #     # Encode target labels
+    #     y_encoded = LabelEncoder().fit_transform(y)        
+    #     X_scaled = self.scaler.transform(X)
+        
+    #     # Perform CV
+    #     model = self.models[model_name]
+    #     cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=5)
+    #     #cv_scores = cross_val_score(model, X_scaled, y, cv=cv, scoring='accuracy')
+        
+    #     print(f"Cross-validation scores: {cv_scores}")
+    #     print(f"Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
+        
+    #     return cv_scores
     
     def save_models(self, best_model_name='Random Forest'):
         """Save trained models"""

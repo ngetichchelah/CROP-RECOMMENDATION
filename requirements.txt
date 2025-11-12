@@ -22,3 +22,4 @@ scikit-learn==1.5.2
 xgboost==2.1.2
 joblib==1.4.2
 flask==2.3.2
+scikit-surprise==1.1.3
