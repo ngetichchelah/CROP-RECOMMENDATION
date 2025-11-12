@@ -26,23 +26,6 @@ build/
 .DS_Store
 Thumbs.db
 
-<<<<<<< HEAD
-# Exclude Steps 3-6 (not ready yet)
-src/
-models/
-sql_queries/
-powerbi/
-app/
-data/database/
-notebooks/sql_analytics.ipynb
-requirements-streamlit.txt
-
-# Exclude extra data files
-FAOSTAT_data_en_10-13-2025.csv
-
-# Logs
-*.log
-=======
 # Large files - Don't push to GitHub
 data/raw/*.csv
 models/*.pkl
@@ -55,4 +38,3 @@ powerbi/*.pbix
 *.log
 *.tmp
 *.bak
->>>>>>> 0d8e89d (Add data files, data exploration/EDA, Visualisations, model training, error analysis)
