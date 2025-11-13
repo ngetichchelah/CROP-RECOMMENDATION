@@ -6,7 +6,9 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
+import time
 from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
@@ -24,8 +26,8 @@ class CropRecommendationModel:
     """Class to handle crop recommendation model training and evaluation"""
     
     #def __init__(self, data_path='data/processed/crop_data_cleaned.csv'):
-    def __init__(self, data_path='data/raw/Crop_recommendation.csv'):
-    # def __init__(self, data_path='data/processed/crop_data_with_features.csv'):
+    #def __init__(self, data_path='data/raw/Crop_recommendation.csv'):
+    def __init__(self, data_path='data/processed/crop_data_with_features.csv'):
         """Initialize with data path"""
         self.data_path = data_path
         self.models = {}
@@ -96,24 +98,61 @@ class CropRecommendationModel:
                 
         return X_train_scaled, X_test_scaled, y_train, y_test, X.columns
     
-    def train_random_forest(self, X_train, y_train):
-        """Train Random Forest model"""        
-        print("TRAINING RANDOM FOREST")
+    # def train_random_forest(self, X_train, y_train):
+    #     """Train Random Forest model"""        
+    #     print("TRAINING RANDOM FOREST")
                 
-        rf_model = RandomForestClassifier(
-            n_estimators=100,
-            max_depth=20,
-            min_samples_split=5,
-            min_samples_leaf=2,
-            random_state=42,
-            n_jobs=-1
+    #     rf_model = RandomForestClassifier(
+    #         n_estimators=100,
+    #         max_depth=20,
+    #         min_samples_split=5,
+    #         min_samples_leaf=2,
+    #         random_state=42,
+    #         n_jobs=-1
+    #     )
+        
+    #     rf_model.fit(X_train, y_train)
+    #     self.models['Random Forest'] = rf_model
+        
+    #     print("Random Forest trained successfully")
+    #     return rf_model
+    
+    def tune_random_forest(self, X_train, y_train, cv=5, n_iter = 20):
+        """Tune Random Forest hyperparameters using GridSearchCV"""
+        print("TUNING RANDOM FOREST HYPERPARAMETERS...")
+        
+        # Define parameter grid
+        param_dist = {
+            'n_estimators': [100, 200, 300],
+            'max_depth': [10, 20, 30],
+            'min_samples_split': [2, 5, 10],
+            'min_samples_leaf': [1, 2, 4],
+            'max_features': ['sqrt', 'log2'],
+            'bootstrap': [True, False]
+        }
+        
+        rf_model = RandomForestClassifier(random_state=42, n_jobs=-1)
+        
+        random_search = RandomizedSearchCV(
+            estimator=rf_model,
+            param_distributions=param_dist,
+            n_iter=10,
+            cv=5,
+            scoring='accuracy',
+            n_jobs=-1,
+            verbose=2,
+            random_state=42
         )
         
-        rf_model.fit(X_train, y_train)
-        self.models['Random Forest'] = rf_model
+        # start = time.time()
+        random_search.fit(X_train, y_train)
+        # end = time.time()
+        #print(f"\nRandomizedSearchCV completed in {end-start:.1f} seconds")
+        print(f"Best parameters: {random_search.best_params_}")
+        print(f"Best CV accuracy: {random_search.best_score_:.4f}")
         
-        print("Random Forest trained successfully")
-        return rf_model
+        self.models['Random Forest Tuned'] = random_search.best_estimator_
+        return random_search.best_estimator_    
     
     def train_xgboost(self, X_train, y_train):
         """Train XGBoost model"""        
@@ -198,7 +237,8 @@ class CropRecommendationModel:
         X_train, X_test, y_train, y_test, feature_names = self.load_data()
         
         # Train models
-        self.train_random_forest(X_train, y_train)
+        #self.train_random_forest(X_train, y_train)
+        self.tune_random_forest(X_train, y_train)
         self.train_xgboost(X_train, y_train)
         self.train_svm(X_train, y_train)
         self.train_knn(X_train, y_train)
@@ -211,11 +251,11 @@ class CropRecommendationModel:
         
         # Return test data for visualization
         return X_test, y_test, feature_names
-    
-    def compare_models(self):
+
+    def compare_models(self, X_test, y_test):
         """Compare all models"""
         print("MODEL COMPARISON")
-                
+        
         comparison_df = pd.DataFrame(self.results).T
         comparison_df = comparison_df[['accuracy', 'precision', 'recall', 'f1_score']]
         comparison_df = comparison_df.round(4)
@@ -225,6 +265,13 @@ class CropRecommendationModel:
         # Find best model
         best_model_name = comparison_df['accuracy'].idxmax()
         best_accuracy = comparison_df['accuracy'].max()
+        
+        # best_model_name = 'Random Forest Tuned'
+        best_model_name = 'Random Forest Tuned'
+        
+        self.evaluate_model(self.models[best_model_name], X_test, y_test, best_model_name)
+
+        # best_accuracy = comparison_df['accuracy'].max()
         
         print(f"\nBest Model: {best_model_name}")
         print(f"   Accuracy: {best_accuracy:.4f}")
@@ -267,7 +314,7 @@ class CropRecommendationModel:
         print(f"\nModel comparison plot saved to: {save_path}")
         plt.show()
     
-    def plot_confusion_matrix(self, y_test, model_name='Random Forest', 
+    def plot_confusion_matrix(self, y_test, model_name='Random Forest Tuned', 
                              save_path='results/figures/confusion_matrix.png'):
         """Plot confusion matrix for best model"""
         y_pred = self.results[model_name]['predictions']
@@ -288,7 +335,7 @@ class CropRecommendationModel:
         print(f"Confusion matrix saved to: {save_path}")
         plt.show()
     
-    def plot_feature_importance(self, feature_names, model_name='Random Forest',
+    def plot_feature_importance(self, feature_names, model_name='Random Forest Tuned',
                                 save_path='results/figures/feature_importance.png'):
         """Plot feature importance"""
         model = self.models[model_name]
@@ -352,16 +399,45 @@ class CropRecommendationModel:
         
         # Encode target
         y_encoded = self.label_encoder.transform(y)
-        X_scaled = self.scaler.transform(X)
+        #X_scaled = self.scaler.transform(X)
         
         # Perform CV
         model = self.models[model_name]
-        cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=cv, scoring='accuracy')
+        
+        if "Random Forest" in model_name or "Tree" in model_name or "forest" in model_name.lower():
+            print("Skipping scaling — tree-based model detected.")
+        
+            # Make sure data is numeric (use engineered dataset)
+            if X.select_dtypes(include='object').shape[1] > 0:
+                print("Encoding categorical features for tree model...")
+                X = pd.get_dummies(X)
+            X_prepared = X.values
+        
+        else:
+            # For models that need scaling
+            #X_prepared = self.scaler.transform(X) - leakage!
+            from sklearn.pipeline import Pipeline
+
+            # Create pipeline with scaling + model
+            pipeline = Pipeline([
+                ('scaler', StandardScaler()),
+                ('model', model)
+            ])
+            #cv_scores = cross_val_score(pipeline, X, y_encoded, cv=cv, scoring='accuracy')
+                    
+        # Perform CV
+        cv_scores = cross_val_score(model, X_prepared, y_encoded, cv=cv, scoring='accuracy')
         
         print(f"Cross-validation scores: {cv_scores}")
         print(f"Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
         
         return cv_scores
+        # cv_scores = cross_val_score(model, X_scaled, y_encoded, cv=cv, scoring='accuracy')
+        
+        # print(f"Cross-validation scores: {cv_scores}")
+        # print(f"Mean CV Accuracy: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
+        
+        # return cv_scores
     
     # def cross_validate(self, model_name='Random Forest', cv=5):
     #     """Perform cross-validation"""
@@ -432,8 +508,10 @@ def main():
     X_test, y_test, feature_names = trainer.train_all_models()
     
     # Compare models
-    comparison_df, best_model_name = trainer.compare_models()
+    #comparison_df, best_model_name = trainer.compare_models()
     
+    comparison_df, best_model_name = trainer.compare_models(X_test, y_test)
+
     # Plot model comparison
     trainer.plot_model_comparison(comparison_df)
     

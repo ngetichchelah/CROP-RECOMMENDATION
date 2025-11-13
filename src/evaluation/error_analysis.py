@@ -24,7 +24,8 @@ class ErrorAnalyzer:
         
         # Load model and preprocessors
         try:
-            self.model = joblib.load('models/crop_model_svm.pkl')
+            #self.model = joblib.load('models/crop_model_random_forest.pkl')
+            self.model = joblib.load('models/crop_model_random_forest_tuned.pkl')
             self.scaler = joblib.load('models/scaler.pkl')
             self.encoder = joblib.load('models/label_encoder.pkl')
             print("✅ Model and preprocessors loaded successfully")
@@ -34,7 +35,8 @@ class ErrorAnalyzer:
         
         # Load data
         try:
-            self.df = pd.read_csv('data/processed/crop_data_cleaned.csv')
+            #self.df = pd.read_csv('data/processed/crop_data_cleaned.csv')
+            self.df = pd.read_csv('data/processed/crop_data_with_features.csv')
             print(f"✅ Data loaded: {self.df.shape[0]} samples, {self.df.shape[1]} features")
         except Exception as e:
             print(f"❌ Error loading data: {e}")
@@ -252,16 +254,16 @@ class ErrorAnalyzer:
             key = f"prob_{row['true_crop']}"
             print(f"  True crop probability: {row[key]*100:.2f}%")
             #print(f"  True crop probability: {row[f'prob_{row[\"true_crop\"]}']*100:.2f}% ")
-            print("-" * 60)
+            print()
         
         return sample_errors
 
 #------------------------confusion trix -------------------------------
     def analyze_confusion_matrix(self):
         """
-    Generate and analyze confusion matrix
-    Shows which crops are confused with each other
-    """
+        Generate and analyze confusion matrix
+        Shows which crops are confused with each other
+        """
         print()
         print("STEP 2: CONFUSION MATRIX ANALYSIS")
         print()

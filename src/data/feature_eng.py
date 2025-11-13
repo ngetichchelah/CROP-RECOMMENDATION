@@ -82,9 +82,22 @@ def select_best_features(df, target_col='label', n_features=15):
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.preprocessing import LabelEncoder
     
-    # Prepare data
-    X = df.select_dtypes(include=[np.number]).drop(columns=[target_col], errors='ignore')
+     # Prepare data - include both numeric and categorical features
+    feature_cols = [col for col in df.columns if col != target_col]
+    
+    # One-hot encode categorical variables
+    categorical_cols = df[feature_cols].select_dtypes(include=['object', 'category']).columns
+    numeric_cols = df[feature_cols].select_dtypes(include=[np.number]).columns
+    
+    # Combine numeric and encoded categorical features
+    X_numeric = df[numeric_cols]
+    X_categorical = pd.get_dummies(df[categorical_cols], prefix=categorical_cols)
+    
+    X = pd.concat([X_numeric, X_categorical], axis=1)
     y = LabelEncoder().fit_transform(df[target_col])
+    
+    # X = df.select_dtypes(include=[np.number]).drop(columns=[target_col], errors='ignore')
+    # y = LabelEncoder().fit_transform(df[target_col])
     
     # Train RF to get feature importance
     rf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -109,11 +122,22 @@ if __name__ == "__main__":
     # Load data
     df = pd.read_csv('data/processed/crop_data_cleaned.csv')
     
+    print("=== DEBUG INFO ===")
+    print(f"Input data shape: {df.shape}")
+    print(f"Input columns: {df.columns.tolist()}")
+    print(f"Has 'label' column: {'label' in df.columns}")
+    
     # Engineer features
     df_engineered = engineer_features(df)
     
+    print(f"Engineered data shape: {df_engineered.shape}")
+    print(f"Has 'label' column: {'label' in df_engineered.columns}")
+    print(f"Label column sample: {df_engineered['label'].head(3).tolist()}")
+    
     # Save engineered dataset
-    df_engineered.to_csv('data/processed/crop_data_with_features.csv', index=False)
+    #df_engineered.to_csv('data/processed/crop_data_with_features.csv', index=False)
+    output_path = 'data/processed/crop_data_with_features.csv'
+    df_engineered.to_csv(output_path, index=False)
     
     print(f"Original features: {df.shape[1]}")
     print(f"With engineered features: {df_engineered.shape[1]}")

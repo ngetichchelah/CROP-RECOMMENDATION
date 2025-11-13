@@ -193,7 +193,7 @@ def main():
     # If predictor fails, show error and exit
     if predictor is None:
         st.error("❌ Failed to load predictor. Please check:")
-        st.error("1. models/ folder exists with crop_model_svm.pkl, scaler.pkl, label_encoder.pkl")
+        st.error("1. models/ folder exists with crop_model_random_forest.pkl, scaler.pkl, label_encoder.pkl")
         st.error("2. src/models/predict.py exists with CropPredictor class")
         return
     
@@ -558,20 +558,19 @@ def main():
                 st.session_state.constraints = constraints
                 st.session_state.user_location = user_location
                 
-                # Show method used
-                method_emoji = {
-                    'hybrid': '🔀',
-                    'cf_only': '👥',
-                    'svm_only': '🤖'
-                }
+                # # Show method used
+                # method_emoji = {
+                #     'hybrid': '🔀',
+                #     'cf_only': '👥',
+                #     'svm_only': '🤖'
+                # }
                 
                 st.success(f"""
                 ✅ **Prediction completed!** 
-                
-                Method: {method_emoji.get(result.get('method', 'svm_only'), '🤖')} {result.get('method', 'svm_only').upper().replace('_', ' ')}
-                
                 View results in the **Recommendations** tab →
                 """)
+                # Method: {method_emoji.get(result.get('method', 'svm_only'), '🤖')} {result.get('method', 'svm_only').upper().replace('_', ' ')}
+                
                 
             except Exception as e:
                 st.error(f"❌ Error making prediction: {e}")
@@ -645,7 +644,7 @@ def main():
             ood_warnings = st.session_state.get('ood_warnings', [])
             
             #====================for CF=========================
-            method = result.get('method', 'svm_only')
+            method = result.get('method', 'rf_only')
             
             # Display method badge
             method_info = {
@@ -1117,11 +1116,11 @@ def main():
         st.write("""
         Our system combines **two powerful approaches** to give you the best recommendations:
         
-        **1. 🤖 Machine Learning (SVM Model)**
+        **1. 🤖 Machine Learning (RF Model)**
         - Analyzes soil nutrients (NPK)
         - Evaluates climate conditions (temperature, humidity, rainfall, pH)
         - Trained on 8,800 agricultural samples
-        - 93.24% accuracy on test data
+        - 92.6% accuracy on test data
         
         **2. 👥 Collaborative Filtering (CF)**
         - Learns from farmer feedback and ratings

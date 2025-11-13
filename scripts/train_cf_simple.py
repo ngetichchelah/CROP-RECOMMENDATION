@@ -144,9 +144,9 @@ class SimpleCF:
 def train_simple_cf(min_ratings=20):
     """Train simple collaborative filtering model"""
     
-    print("="*60)
+    
     print("🤖 PURE PYTHON COLLABORATIVE FILTERING TRAINING")
-    print("="*60)
+    
     
     # Load ratings data
     ratings_file = 'data/crop_ratings.csv'
@@ -220,9 +220,9 @@ def train_simple_cf(min_ratings=20):
     joblib.dump(model_package, model_path)
     print(f"\n💾 Model saved to: {model_path}")
     
-    print("\n" + "="*60)
+    
     print("🎉 SIMPLE CF TRAINING COMPLETE!")
-    print("="*60)
+    
     print(f"\n📌 This model uses:")
     print(f"   ✅ Pure Python (no compilation needed)")
     print(f"   ✅ User-based collaborative filtering")
