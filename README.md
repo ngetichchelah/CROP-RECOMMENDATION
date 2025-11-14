@@ -1,7 +1,6 @@
 # Crop Recommendation System using Machine Learning
 
-**Python 3.8+** | **scikit-learn** | **XGBoost** | **Power BI** | **License: MIT**
-
+(https://crop-insight-landing.lovable.app/)
 ---
 
 ## 🌾 Project Overview
