@@ -1,6 +1,7 @@
 # Crop Recommendation System using Machine Learning
 
-(https://crop-insight-landing.lovable.app/)
+Presentation: (https://crop-insight-landing.lovable.app/)
+Article: https://medium.com/@ngetichchelah/i-c-r-s-intelligent-crop-recommendation-system-d98cd51f7e13
 ---
 
 ## 🌾 Project Overview
